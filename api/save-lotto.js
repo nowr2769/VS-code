@@ -28,15 +28,16 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: '6개의 번호가 필요합니다.' });
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL;
+  const rawSupabaseUrl = (process.env.SUPABASE_URL || '').trim();
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
   const tableName = (process.env.SUPABASE_TABLE_NAME || 'lotto_results').trim();
 
-  if (!supabaseUrl || !supabaseKey) {
+  if (!rawSupabaseUrl || !supabaseKey) {
     return res.status(500).json({ error: 'Supabase 환경변수가 설정되지 않았습니다.' });
   }
 
-  const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/${encodeURIComponent(tableName)}`;
+  const supabaseUrl = rawSupabaseUrl.replace(/\/rest\/v1\/?$/i, '').replace(/\/$/, '');
+  const endpoint = `${supabaseUrl}/rest/v1/${encodeURIComponent(tableName)}`;
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
