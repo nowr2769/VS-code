@@ -30,13 +30,14 @@ module.exports = async function handler(req, res) {
 
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
-  const tableName = process.env.SUPABASE_TABLE_NAME || 'lotto_results';
+  const tableName = (process.env.SUPABASE_TABLE_NAME || 'lotto_results').trim();
 
   if (!supabaseUrl || !supabaseKey) {
     return res.status(500).json({ error: 'Supabase 환경변수가 설정되지 않았습니다.' });
   }
 
-  const response = await fetch(`${supabaseUrl.replace(/\/$/, '')}/rest/v1/${encodeURIComponent(tableName)}`, {
+  const endpoint = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/${encodeURIComponent(tableName)}`;
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       apikey: supabaseKey,
@@ -65,7 +66,11 @@ module.exports = async function handler(req, res) {
     }
 
     if (response.status === 404) {
-      return res.status(404).json({ error: 'Supabase 테이블을 찾을 수 없습니다. 테이블 이름을 확인해 주세요.' });
+      return res.status(404).json({
+        error: 'Supabase 테이블을 찾을 수 없습니다. 테이블 이름을 확인해 주세요.',
+        endpoint,
+        tableName
+      });
     }
 
     return res.status(response.status).json({ error: 'Supabase 저장 실패', detail });
