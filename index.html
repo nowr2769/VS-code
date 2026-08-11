@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로또 번호 추첨기</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fef3c7, #dbeafe);
+      color: #111827;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      padding: 28px;
+      text-align: center;
+      width: 360px;
+    }
+    h1 { margin-top: 0; font-size: 24px; }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 12px 0 18px;
+    }
+    button:hover { background: #1d4ed8; }
+    #result {
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      min-height: 32px;
+    }
+    .hint { margin-top: 10px; font-size: 14px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>로또 번호 추첨기</h1>
+    <button onclick="generateNumbers()">번호 추첨</button>
+    <div id="result">클릭해 주세요</div>
+    <div class="hint">Vercel에서 바로 보이도록 홈 페이지로 설정했습니다.</div>
+  </div>
+
+  <script>
+    function generateNumbers() {
+      const numbers = [];
+      while (numbers.length < 6) {
+        const n = Math.floor(Math.random() * 45) + 1;
+        if (!numbers.includes(n)) numbers.push(n);
+      }
+      numbers.sort((a, b) => a - b);
+      document.getElementById('result').textContent = numbers.join('  ');
+    }
+  </script>
+</body>
+</html>
