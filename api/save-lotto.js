@@ -29,7 +29,7 @@ module.exports = async function handler(req, res) {
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
   const tableName = process.env.SUPABASE_TABLE_NAME || 'lotto_results';
 
   if (!supabaseUrl || !supabaseKey) {
@@ -48,7 +48,26 @@ module.exports = async function handler(req, res) {
   });
 
   if (!response.ok) {
-    const detail = await response.text();
+    const detailText = await response.text();
+    let detail = detailText;
+
+    try {
+      const parsed = JSON.parse(detailText);
+      detail = parsed?.message || parsed?.error || detailText;
+    } catch (error) {
+      // keep raw text if it is not JSON
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      return res.status(response.status).json({
+        error: 'Supabase 인증이 거부되었습니다. RLS 정책을 허용하거나 서비스 역할 키를 설정해 주세요.'
+      });
+    }
+
+    if (response.status === 404) {
+      return res.status(404).json({ error: 'Supabase 테이블을 찾을 수 없습니다. 테이블 이름을 확인해 주세요.' });
+    }
+
     return res.status(response.status).json({ error: 'Supabase 저장 실패', detail });
   }
 
