@@ -61,13 +61,15 @@ module.exports = async function handler(req, res) {
 
     if (response.status === 401 || response.status === 403) {
       return res.status(response.status).json({
-        error: 'Supabase 인증이 거부되었습니다. RLS 정책을 허용하거나 서비스 역할 키를 설정해 주세요.'
+        error: 'Supabase 인증이 거부되었습니다. RLS 정책을 허용하거나 서비스 역할 키를 설정해 주세요.',
+        detail
       });
     }
 
     if (response.status === 404) {
       return res.status(404).json({
         error: 'Supabase 테이블을 찾을 수 없습니다. 테이블 이름을 확인해 주세요.',
+        detail,
         endpoint,
         tableName
       });
