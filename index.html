@@ -44,21 +44,6 @@
       min-height: 32px;
       margin-bottom: 10px;
     }
-    .settings {
-      margin-top: 12px;
-      text-align: left;
-      font-size: 13px;
-      color: #4b5563;
-    }
-    .settings input {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      margin-bottom: 8px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      box-sizing: border-box;
-    }
     .status {
       margin-top: 10px;
       font-size: 14px;
@@ -78,22 +63,10 @@
     </div>
     <div id="result">클릭해 주세요</div>
 
-    <div class="settings">
-      <label>Supabase URL</label>
-      <input id="supabaseUrl" placeholder="https://xxxx.supabase.co" />
-
-      <label>Supabase anon key</label>
-      <input id="supabaseKey" placeholder="your-anon-key" />
-
-      <label>테이블 이름</label>
-      <input id="tableName" value="lotto_results" />
-    </div>
-
     <div id="status" class="status"></div>
-    <div class="hint">테이블 예시: numbers text, created_at timestamp with time zone default now()</div>
+    <div class="hint">저장 요청은 Vercel 서버 함수를 통해 안전하게 전달됩니다.</div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     let latestNumbers = [];
 
@@ -121,23 +94,19 @@
         return;
       }
 
-      const supabaseUrl = document.getElementById('supabaseUrl').value.trim();
-      const supabaseKey = document.getElementById('supabaseKey').value.trim();
-      const tableName = document.getElementById('tableName').value.trim() || 'lotto_results';
-
-      if (!supabaseUrl || !supabaseKey) {
-        setStatus('Supabase URL과 anon key를 입력해 주세요.', 'error');
-        return;
-      }
-
       try {
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        const { error } = await supabase.from(tableName).insert([
-          { numbers: latestNumbers.join(',') }
-        ]);
+        const response = await fetch('/api/save-lotto', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ numbers: latestNumbers })
+        });
 
-        if (error) {
-          throw error;
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || '저장에 실패했습니다.');
         }
 
         setStatus(`저장 완료: ${latestNumbers.join(' ')}`, 'success');
