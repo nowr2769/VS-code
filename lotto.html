@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로또 번호 추첨기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 360px;
+    }
+    h1 { font-size: 24px; margin-bottom: 16px; }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    button:hover { background: #1d4ed8; }
+    .numbers {
+      font-size: 24px;
+      font-weight: bold;
+      color: #111827;
+      margin-top: 12px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>로또 번호 추첨기</h1>
+    <button onclick="generateNumbers()">번호 추첨</button>
+    <div id="result" class="numbers">여기를 클릭하면 번호가 나옵니다.</div>
+  </div>
+
+  <script>
+    function generateNumbers() {
+      const numbers = [];
+      while (numbers.length < 6) {
+        const n = Math.floor(Math.random() * 45) + 1;
+        if (!numbers.includes(n)) numbers.push(n);
+      }
+      numbers.sort((a, b) => a - b);
+      document.getElementById('result').textContent = numbers.join('  ');
+    }
+  </script>
+</body>
+</html>
