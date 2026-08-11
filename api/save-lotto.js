@@ -38,6 +38,11 @@ module.exports = async function handler(req, res) {
 
   const supabaseUrl = rawSupabaseUrl.replace(/\/rest\/v1\/?$/i, '').replace(/\/$/, '');
   const endpoint = `${supabaseUrl}/rest/v1/${encodeURIComponent(tableName)}`;
+  const payload = {
+    numbers: numbers.join(','),
+    created_at: new Date().toISOString()
+  };
+
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -46,7 +51,7 @@ module.exports = async function handler(req, res) {
       'Content-Type': 'application/json',
       Prefer: 'return=minimal'
     },
-    body: JSON.stringify([{ numbers: numbers.join(',') }])
+    body: JSON.stringify([payload])
   });
 
   if (!response.ok) {
@@ -76,7 +81,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    return res.status(response.status).json({ error: 'Supabase 저장 실패', detail });
+    return res.status(response.status).json({ error: 'Supabase 저장 실패', detail, endpoint, payload });
   }
 
   return res.status(200).json({ success: true, numbers });
